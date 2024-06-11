@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from django.core.management.base import BaseCommand
-from recettes.models import Recipe
+from recettes.models import Recipe, Ingredient, RecipeIngredient
 
 class Command(BaseCommand):
     help = 'Scrape base recipes from CuisineAZ'
@@ -29,20 +29,26 @@ class Command(BaseCommand):
                 ingredients_tags = recipe_soup.find_all('span', class_='ingredient_label')
                 quantity_tags = recipe_soup.find_all('span', class_='js-ingredient-qte ingredient_qte')
 
-                ingredients_list = []
-                for idx in range(len(ingredients_tags)):
-                    quantity = quantity_tags[idx].text.strip()
-                    ingredient = ingredients_tags[idx].text.strip()
-                    ingredients_list.append(f'{quantity} {ingredient}')
-
-                ingredients = ', '.join(ingredients_list)
-
-                # Enregistrer la recette dans la base de données avec la catégorie 'base'
-                Recipe.objects.create(
+                # Check if the recipe already exists
+                recipe_obj, created = Recipe.objects.get_or_create(
                     title=title,
-                    ingredients=ingredients,
                     recipe_url=recipe_url,
                     category='base'
                 )
 
-                self.stdout.write(self.style.SUCCESS(f'Recipe "{title}" scraped successfully!'))
+                if created:
+                    for idx in range(len(ingredients_tags)):
+                        ingredient_name = ingredients_tags[idx].text.strip()
+                        quantity = quantity_tags[idx].text.strip()
+
+                        ingredient_obj, _ = Ingredient.objects.get_or_create(name=ingredient_name)
+
+                        RecipeIngredient.objects.create(
+                            recipe=recipe_obj,
+                            ingredient=ingredient_obj,
+                            quantity=quantity
+                        )
+
+                    self.stdout.write(self.style.SUCCESS(f'Recipe "{title}" scraped successfully!'))
+                else:
+                    self.stdout.write(self.style.WARNING(f'Recipe "{title}" already exists, skipping.'))
