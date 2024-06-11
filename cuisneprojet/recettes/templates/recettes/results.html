@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats de Recherche</title>
+</head>
+<body>
+    <h1>Résultats de Recherche</h1>
+    {% if recipes %}
+        <ul>
+            {% for recipe in recipes %}
+                <li>
+                    <h2>{{ recipe.title }}</h2>
+                    <p>Catégorie: {{ recipe.get_category_display }}</p>
+                    <p>URL: <a href="{{ recipe.recipe_url }}">{{ recipe.recipe_url }}</a></p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <a href="{% url 'select_ingredients' %}">Retour à la sélection des ingrédients</a>
+</body>
+</html>
