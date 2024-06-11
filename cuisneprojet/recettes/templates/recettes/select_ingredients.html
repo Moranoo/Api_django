@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sélectionnez vos Ingrédients</title>
+</head>
+<body>
+    <h1>Sélectionnez vos Ingrédients</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {% for ingredient in ingredients %}
+            <label>
+                <input type="checkbox" name="ingredients" value="{{ ingredient.name }}">
+                {{ ingredient.name }}
+            </label><br>
+        {% endfor %}
+        <button type="submit">Rechercher des Recettes</button>
+    </form>
+</body>
+</html>
