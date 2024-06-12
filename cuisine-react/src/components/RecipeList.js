@@ -38,8 +38,10 @@ function RecipeList() {
                 {recipes.map(recipe => (
                     <div className="bg-white rounded-lg shadow-lg p-6 relative" key={recipe.id}>
                         <div className="relative">
-                            <p className="text-sm mb-2">{getCategoryEmoji(recipe.category)}</p>
-                            <img src={recipe.image_url} alt={recipe.title} className="w-full h-auto object-cover rounded-lg" />  
+                            <img src={recipe.image_url} alt={recipe.title} className="w-full h-auto object-cover rounded-lg" />
+                            <span className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-lg text-2xl flex items-center justify-center" style={{ width: '36px', height: '36px' }}>
+                                {getCategoryEmoji(recipe.category)}
+                            </span>
                         </div>
                         <h2 className="text-3xl font-semibold text-center mb-4">{recipe.title}</h2>
                         <div className="flex justify-center mt-4">
