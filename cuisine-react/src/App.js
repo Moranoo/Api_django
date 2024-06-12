@@ -1,10 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import RecipeList from './components/RecipeList';
 import IngredientSelector from './components/IngredientSelector';
 import Navbar from './components/Navbar';
-import RegisterForm from './components/RegisterForm';  // Importer le formulaire d'inscription
-import LoginForm from './components/LoginForm';        // Importer le formulaire de connexion
+import RegisterForm from './components/RegisterForm';
+import LoginForm from './components/LoginForm';
+import Home from './components/Home';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
     return (
@@ -12,10 +14,12 @@ function App() {
             <div className="App">
                 <Navbar />
                 <Routes>
-                    <Route path="/" element={<RecipeList />} />
-                    <Route path="/select-ingredients" element={<IngredientSelector />} />
-                    <Route path="/register" element={<RegisterForm />} />  {/* Route pour l'inscription */}
-                    <Route path="/login" element={<LoginForm />} />        {/* Route pour la connexion */}
+                    <Route path="/" element={<Navigate to="/login" />} />
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/login" element={<LoginForm />} />
+                    <Route path="/register" element={<RegisterForm />} />
+                    <Route path="/recipes" element={<ProtectedRoute element={RecipeList} />} />
+                    <Route path="/select-ingredients" element={<ProtectedRoute element={IngredientSelector} />} />
                 </Routes>
             </div>
         </Router>
