@@ -25,7 +25,7 @@ function RecipeList() {
     return (
         <div>
             <h1>Liste des Recettes</h1>
-            <ul>
+            <ul className={'flex justify-center flex-col gap-4'}>
                 {recipes.map(recipe => (
                     <li key={recipe.id}>
                         <h2>{recipe.title}</h2>
