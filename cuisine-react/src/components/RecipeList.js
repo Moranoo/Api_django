@@ -25,12 +25,20 @@ function RecipeList() {
     return (
         <div>
             <h1>Liste des Recettes</h1>
-            <ul>
+            <ul className={'flex justify-center flex-col gap-4'}>
                 {recipes.map(recipe => (
                     <li key={recipe.id}>
                         <h2>{recipe.title}</h2>
                         <p>Catégorie: {recipe.category}</p>
                         <p>URL: <a href={recipe.recipe_url}>{recipe.recipe_url}</a></p>
+                        <h3>Ingrédients:</h3>
+                        <ul>
+                            {recipe.ingredients.map(ingredient => (
+                                <li key={ingredient.name}>
+                                    {ingredient.quantity} {ingredient.name}
+                                </li>
+                            ))}
+                        </ul>
                     </li>
                 ))}
             </ul>
