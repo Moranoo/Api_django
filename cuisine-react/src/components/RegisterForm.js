@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function RegisterForm() {
@@ -6,6 +7,8 @@ function RegisterForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [isRegistered, setIsRegistered] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -15,8 +18,11 @@ function RegisterForm() {
             password
         })
         .then(response => {
-            setMessage('Utilisateur enregistré avec succès!');
-            console.log(response.data);
+            setMessage('Utilisateur enregistré avec succès! Vous serez redirigé vers la page de connexion.');
+            setIsRegistered(true);
+            setTimeout(() => {
+                navigate('/login');  // Rediriger vers la page de connexion après un délai de 3 secondes
+            }, 3000);
         })
         .catch(error => {
             setMessage("L'inscription a échoué. Veuillez réessayer.");
@@ -58,7 +64,7 @@ function RegisterForm() {
                 <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
                     S'inscrire
                 </button>
-                {message && <p className="mt-4 text-red-500">{message}</p>}
+                {message && <p className={`mt-4 ${isRegistered ? 'text-green-500' : 'text-red-500'}`}>{message}</p>}
             </form>
         </div>
     );
