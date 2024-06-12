@@ -22,9 +22,7 @@ def get_recipes(request):
     # Filtrage par ingrédients
     if ingredients:
         ingredient_ids = Ingredient.objects.filter(name__in=ingredients).values_list('id', flat=True)
-        for ingredient_id in ingredient_ids:
-            recipes = recipes.filter(ingredients__id=ingredient_id)
-        # S'assurer que les recettes ont tous les ingrédients sélectionnés
+        recipes = recipes.filter(ingredients__id__in=ingredient_ids)
         recipes = recipes.annotate(num_ingredients=Count('ingredients')).filter(num_ingredients__gte=len(ingredient_ids)).distinct()
 
     paginator = RecipePagination()

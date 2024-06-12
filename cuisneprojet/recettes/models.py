@@ -26,7 +26,7 @@ class Recipe(models.Model):
     ]
 
     title = models.CharField(max_length=255)
-    ingredients = models.ManyToManyField(Ingredient,related_name='ingredient',through='RecipeIngredient')  # Pour stocker les ingrédients et quantités en texte
+    ingredients = models.ManyToManyField(Ingredient, related_name='ingredient',through='RecipeIngredient')  # Pour stocker les ingrédients et quantités en texte
     recipe_url = models.URLField()
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)  # Augmenté pour éviter les erreurs
     date_added = models.DateTimeField(auto_now_add=True)
