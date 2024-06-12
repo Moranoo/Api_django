@@ -10,7 +10,6 @@ page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 
 pagination = soup.find_all('a', class_='lienPagination')
-print(len(pagination))
 
 for i in range(len(pagination)+1):
     url = f'https://www.cuisineaz.com/categories/desserts-cat48681?page={i}'
@@ -21,9 +20,6 @@ for i in range(len(pagination)+1):
     # find all the recipes
     recipes = soup.find_all('a', class_='tile_title txt-black fs18 dblock mb5 txt-normal')
     for recipe in recipes:
-        # print(recipe.text)
-        # print(recipe['href'])
-        # print()
         url = 'https://www.cuisineaz.com' + recipe['href']
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')

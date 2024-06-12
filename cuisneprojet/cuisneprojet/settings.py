@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'recettes.apps.RecettesConfig',
-     'corsheaders',  
+    'corsheaders',
 ]
 
 MIDDLEWARE = [

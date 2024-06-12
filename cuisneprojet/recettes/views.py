@@ -13,10 +13,12 @@ class RecipePagination(PageNumberPagination):
 def get_recipes(request):
     category = request.query_params.get('category')
     ingredients = request.query_params.getlist('ingredients')
-    print('Category:', category)  # Pour déboguer
-    print('Ingredients:', ingredients)  # Pour déboguer
+    title = request.query_params.get('title')
 
     recipes = Recipe.objects.all()
+
+    if title:
+        recipes = recipes.filter(title__icontains=title)
 
     if category:
         recipes = recipes.filter(category=category)
