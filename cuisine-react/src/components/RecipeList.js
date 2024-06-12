@@ -22,30 +22,46 @@ function RecipeList() {
         fetchRecipes('http://127.0.0.1:8000/api/recipes/');
     }, []);
 
+    const getCategoryEmoji = (category) => {
+        const categoryEmojiMap = {
+            'plat': '🫕',   // Pot of food
+            'base': '🥘',  // Paella (commonly used to represent a base dish)
+            'dessert': '🍰' // Cake
+        };
+        return categoryEmojiMap[category.toLowerCase()] || '🍽'; // Default plate with fork and knife
+    };
+
     return (
-        <div>
-            <h1>Liste des Recettes</h1>
-            <ul>
+        <div className="flex flex-col items-center gap-4">
+            <h1 className="text-center text-6xl mt-14 mb-12">Liste des Recettes</h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {recipes.map(recipe => (
-                    <li key={recipe.id}>
-                        <h2>{recipe.title}</h2>
-                        <p>Catégorie: {recipe.category}</p>
-                        <p>URL: <a href={recipe.recipe_url}>{recipe.recipe_url}</a></p>
-                        {recipe.image_url && <img src={recipe.image_url} alt={recipe.title} />}
-                        <h3>Ingrédients:</h3>
+                    <div className="bg-white rounded-lg shadow-lg p-6 relative" key={recipe.id}>
+                        <div className="relative">
+                            <img src={recipe.image_url} alt={recipe.title} className="w-full h-auto object-cover rounded-lg" />
+                            <span className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-lg text-2xl flex items-center justify-center" style={{ width: '36px', height: '36px' }}>
+                                {getCategoryEmoji(recipe.category)}
+                            </span>
+                        </div>
+                        <h2 className="text-3xl font-semibold text-center mb-4">{recipe.title}</h2>
+                        <div className="flex justify-center mt-4">
+                            <a href={recipe.recipe_url} className="text-blue-500 hover:text-blue-700">Liens vers la recette</a>
+                        </div>
+                        <h3 className="font-bold mt-4">Ingrédients:</h3>
                         <ul>
                             {recipe.ingredients.map(ingredient => (
-                                <li key={ingredient.name}>
-                                    {ingredient.quantity} {ingredient.name}
-                                </li>
+                                <li key={ingredient.name} className="text-sm list-none">{ingredient.quantity} {ingredient.name}</li>
                             ))}
                         </ul>
-                    </li>
+                    </div>
                 ))}
-            </ul>
-            <div className="pagination">
-                {prevPage && <button onClick={() => fetchRecipes(prevPage)}>Précédente</button>}
-                {nextPage && <button onClick={() => fetchRecipes(nextPage)}>Suivante</button>}
+            </div>
+            <p className="text-sm text-gray-600 mt-6 mb-4">
+                Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
+            </p>
+            <div className="flex justify-between w-full px-6 my-4">
+                {prevPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(prevPage)}>Précédente</button>}
+                {nextPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(nextPage)}>Suivante</button>}
             </div>
         </div>
     );
