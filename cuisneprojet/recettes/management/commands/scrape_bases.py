@@ -1,3 +1,5 @@
+import recettes; print(f'ici le print: {recettes}')
+
 import requests
 from bs4 import BeautifulSoup
 from django.core.management.base import BaseCommand
@@ -26,13 +28,16 @@ class Command(BaseCommand):
                 recipe_soup = BeautifulSoup(recipe_page.content, 'html.parser')
 
                 title = recipe_soup.find('h1', class_='recipe-title').text.strip()
+                image_tag = recipe_soup.find('img', class_='imgRecipe')
+                image_url = image_tag['src'] if image_tag else ''
+
                 ingredients_tags = recipe_soup.find_all('span', class_='ingredient_label')
                 quantity_tags = recipe_soup.find_all('span', class_='js-ingredient-qte ingredient_qte')
 
-                # Check if the recipe already exists
                 recipe_obj, created = Recipe.objects.get_or_create(
                     title=title,
                     recipe_url=recipe_url,
+                    image_url=image_url,  # Ajout de l'URL de l'image
                     category='base'
                 )
 
