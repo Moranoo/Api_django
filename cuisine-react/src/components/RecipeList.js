@@ -24,11 +24,11 @@ function RecipeList() {
 
     const getCategoryEmoji = (category) => {
         const categoryEmojiMap = {
-            'plat': '🫕',
-            'base': '🥘',
-            'dessert': '🍰'
+            'plat': '🫕',   // Pot of food
+            'base': '🥘',  // Paella (commonly used to represent a base dish)
+            'dessert': '🍰' // Cake
         };
-        return categoryEmojiMap[category.toLowerCase()] || '🍽';
+        return categoryEmojiMap[category.toLowerCase()] || '🍽'; // Default plate with fork and knife
     };
 
     return (
@@ -56,6 +56,9 @@ function RecipeList() {
                     </div>
                 ))}
             </div>
+            <p className="text-sm text-gray-600 mt-6 mb-4">
+                Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
+            </p>
             <div className="flex justify-between w-full px-6 my-4">
                 {prevPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(prevPage)}>Précédente</button>}
                 {nextPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(nextPage)}>Suivante</button>}
