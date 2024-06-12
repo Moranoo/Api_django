@@ -1,3 +1,4 @@
 .env
 monenv
-migrattions/__pycache__
+migrations/__pycache__
+cuisneprojet/recettes/__pycache__
