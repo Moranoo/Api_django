@@ -19,7 +19,6 @@ function IngredientSelector() {
             .catch(error => {
                 console.error('There was an error fetching the ingredients!', error);
             });
-        console.log('Selected Ingredients:', selectedIngredients);
     }, [selectedIngredients]);
 
     const fetchRecipes = (url) => {
