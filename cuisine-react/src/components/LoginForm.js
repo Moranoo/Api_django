@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function LoginForm() {
@@ -19,7 +19,7 @@ function LoginForm() {
             const { access, refresh } = response.data;
             localStorage.setItem('access_token', access);
             localStorage.setItem('refresh_token', refresh);
-            navigate('/recipes');
+            navigate('/recipes');  // Rediriger vers la page des recettes après la connexion
         })
         .catch(error => {
             setMessage('Login failed. Please try again.');
@@ -53,6 +53,9 @@ function LoginForm() {
                     Se connecter
                 </button>
                 {message && <p className="mt-4 text-red-500">{message}</p>}
+                <p className="mt-4 text-center">
+                    Pas encore de compte ? <Link to="/register" className="text-blue-500">S'inscrire</Link>
+                </p>
             </form>
         </div>
     );
