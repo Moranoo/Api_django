@@ -41,7 +41,7 @@ function IngredientSelector() {
             console.error('There was an error fetching the recipes!', error);
         });
     };
-
+  
     useEffect(() => {
         if (selectedIngredients.length > 0) {
             fetchRecipes('http://127.0.0.1:8000/api/recipes/');
