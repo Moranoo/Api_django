@@ -39,6 +39,7 @@ function IngredientSelector() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        console.log('Selected Ingredients:', selectedIngredients); // Pour déboguer
         fetchRecipes('http://127.0.0.1:8000/api/recipes/');
     };
 
