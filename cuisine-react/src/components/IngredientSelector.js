@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import qs from 'qs';
 
 function IngredientSelector() {
     const [categories, setCategories] = useState(['base', 'dessert', 'plat']);
@@ -18,13 +19,17 @@ function IngredientSelector() {
             .catch(error => {
                 console.error('There was an error fetching the ingredients!', error);
             });
-    }, []);
+        console.log('Selected Ingredients:', selectedIngredients);
+    }, [selectedIngredients]);
 
     const fetchRecipes = (url) => {
         axios.get(url, {
             params: {
                 category: selectedCategory,
                 ingredients: selectedIngredients
+            },
+            paramsSerializer: params => {
+                return qs.stringify(params, { arrayFormat: "repeat" })
             }
         })
         .then(response => {
@@ -36,17 +41,25 @@ function IngredientSelector() {
             console.error('There was an error fetching the recipes!', error);
         });
     };
+  
+    useEffect(() => {
+        if (selectedIngredients.length > 0) {
+            fetchRecipes('http://127.0.0.1:8000/api/recipes/');
+        }
+    }, [selectedIngredients, selectedCategory]);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log('Selected Ingredients:', selectedIngredients); // Pour déboguer
-        fetchRecipes('http://127.0.0.1:8000/api/recipes/');
+    const handleIngredientChange = (e) => {
+        if (e.target.checked) {
+            setSelectedIngredients([...selectedIngredients, e.target.value]);
+        } else {
+            setSelectedIngredients(selectedIngredients.filter(item => item !== e.target.value));
+        }
     };
 
     return (
         <div>
             <h1>Sélectionnez vos Ingrédients</h1>
-            <form onSubmit={handleSubmit}>
+            <form>
                 <label>
                     Catégorie:
                     <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
@@ -60,13 +73,7 @@ function IngredientSelector() {
                         <input 
                             type="checkbox" 
                             value={ingredient.name}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    setSelectedIngredients([...selectedIngredients, e.target.value]);
-                                } else {
-                                    setSelectedIngredients(selectedIngredients.filter(item => item !== e.target.value));
-                                }
-                            }}
+                            onChange={handleIngredientChange}
                         />
                         {ingredient.name}
                     </label>
