@@ -51,6 +51,11 @@ function RecipeList() {
         setRecipeTitle(e.target.value);
     };
 
+    function getPageNumber(url) {
+        const urlParams = new URLSearchParams(new URL(url).search);
+        return parseInt(urlParams.get('page'));
+    }
+
     const getCategoryEmoji = (category) => {
         const categoryEmojiMap = {
             'plat': '🫕',   // Pot of food
@@ -138,8 +143,19 @@ function RecipeList() {
             <p className="text-sm text-gray-600 mt-6 mb-4">
                 Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
             </p>
-           
             {loading && loadingRecipes()}
+            <div className="pagination flex flex-col items-center gap-4 my-7">
+                <div className="flex justify-center gap-4">
+                    {prevPage &&
+                        <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft}
+                                                                                        size={"3x"}/></button>}
+                    {nextPage &&
+                        <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight}
+                                                                                        size={"3x"}/></button>}
+                </div>
+                {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> :
+                    <p className={"text-center"}>Vous êtes sur la dernière page</p>}
+            </div>
         </div>
     );
 }
