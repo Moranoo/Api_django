@@ -1,62 +1,76 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import axios from 'axios';
 import qs from 'qs';
 import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faCircleArrowLeft, faCircleArrowRight} from '@fortawesome/free-solid-svg-icons'
 
+const animatedComponents = makeAnimated();
 
-function RecipeList() {
+function IngredientSelector() {
     const [categories] = useState(['base', 'dessert', 'plat']);
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('plat');
+    const [ingredients, setIngredients] = useState([]);
+    const [selectedIngredients, setSelectedIngredients] = useState([]);
     const [recipes, setRecipes] = useState([]);
     const [recipeTitle, setRecipeTitle] = useState('');
     const [nextPage, setNextPage] = useState(null);
     const [prevPage, setPrevPage] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        axios.get('http://127.0.0.1:8000/api/ingredients/')
+            .then(response => {
+                setIngredients(response.data);
+                setLoading(false)
+            })
+            .catch(error => {
+                console.error('There was an error fetching the ingredients!', error);
+            });
+    }, [selectedIngredients]);
+
     const fetchRecipes = useCallback((url) => {
-        setLoading(true);
+        setLoading(true)
         axios.get(url, {
             params: {
                 title: recipeTitle,
                 category: selectedCategory,
+                ingredients: selectedIngredients
             },
             paramsSerializer: params => {
-                return qs.stringify(params, { arrayFormat: "repeat" });
+                return qs.stringify(params, { arrayFormat: "repeat" })
             }
         })
         .then(response => {
             setRecipes(response.data.results);
             setNextPage(response.data.next);
             setPrevPage(response.data.previous);
-            setLoading(false);
+            setLoading(false)
         })
         .catch(error => {
             console.error('There was an error fetching the recipes!', error);
         });
-    }, [selectedCategory, recipeTitle]);
+    }, [selectedIngredients, selectedCategory, recipeTitle]);
 
     useEffect(() => {
-        fetchRecipes('http://127.0.0.1:8000/api/recipes/');
+        const timeout = setTimeout(() => {
+                    fetchRecipes('http://127.0.0.1:8000/api/recipes/');
+        }, 500);
+        return () => clearTimeout(timeout);
     }, [fetchRecipes]);
 
+    const handleIngredientChange = (e) => {
+        setSelectedIngredients(e.map(ingredient => ingredient.value));
+    };
+
     const handleCategoryChange = (e) => {
-        setSelectedCategory(e ? e.value : '');
+        setSelectedCategory(e.value);
     };
 
     const handleRecipeTitle = (e) => {
         setRecipeTitle(e.target.value);
-    };
-
-    const getCategoryEmoji = (category) => {
-        const categoryEmojiMap = {
-            'plat': '🫕',   // Pot of food
-            'base': '🥘',  // Paella (commonly used to represent a base dish)
-            'dessert': '🍰' // Cake
-        };
-        return categoryEmojiMap[category.toLowerCase()] || '🍽'; // Default plate with fork and knife
-    };
+    }
 
     const loadingRecipies = () => {
         if (loading) {
@@ -64,17 +78,17 @@ function RecipeList() {
                 <div
                     className="mx-auto justify-center content-center flex h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]"
                     role="status">
-                    <span
-                        className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-                    >
-                        Loading...
-                    </span>
+                        <span
+                            className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+                        >
+                            Loading...
+                        </span>
                 </div>
-            );
+            )
         } else {
-            return <p className={'text-center'}>Aucune recette trouvée pour les critères sélectionnés.</p>;
+            return <p className={'text-center'}>Aucune recette trouvée pour les ingrédients sélectionnés.</p>
         }
-    };
+    }
 
     function getPageNumber(url) {
         const urlParams = new URLSearchParams(new URL(url).search);
@@ -83,25 +97,43 @@ function RecipeList() {
     }
 
     return (
-        <div className="flex flex-col items-center gap-4">
-            <h1 className="text-center text-6xl mt-14 mb-12">Liste des Recettes</h1>
-            <div className="flex flex-row justify-center content-center items-center gap-8">
-                <div className="flex flex-col w-80 justify-center content-center items-center gap-2">
-                    Catégories
-                    <Select
-                        className="w-full"
-                        options={categories.map(category => ({ value: category, label: category }))}
-                        onChange={handleCategoryChange}
-                        placeholder={'Sélectionnez une catégorie...'}
-                        isClearable
-                    />
+        <div>
+            <h1 className={'text-center text-6xl mt-14 mb-12'}>Sélectionnez vos Ingrédients</h1>
+            <h2 className={'text-black/40 text-center mb-14'}>Choisissez une catégorie et des ingrédients pour trouver
+                des recettes qui vous conviennent.</h2>
+            <div className="flex flex-col justify-center content-center items-center gap-4">
+                <div className={'flex justify-center content-center gap-8'}>
+                    <div className="flex flex-col w-80 justify-center content-center items-center gap-2">
+                        Catégories
+                        <Select
+                            className={'w-full'}
+                            options={categories.map(category => ({value: category, label: category}))}
+                            onChange={handleCategoryChange}
+                            defaultValue={{value: 'plat', label: 'plat'}}
+                            placeholder={'Sélectionnez une catégorie...'}
+                        />
+                    </div>
+                    <div className="flex flex-col w-80 justify-center content-center items-center gap-2">
+                        Ingrédients
+                        <Select
+                            className={'w-full'}
+                            components={animatedComponents}
+                            options={ingredients.map(ingredient => ({value: ingredient.name, label: ingredient.name}))}
+                            onChange={handleIngredientChange}
+                            isMulti
+                            noOptionsMessage={() => 'Aucun ingrédient trouvé.'}
+                            placeholder={'Sélectionnez des ingrédients...'}
+                            isLoading={loading}
+                        />
+                    </div>
                 </div>
+                <p className={"text-5xl"}>Ou</p>
                 <div className="flex flex-col justify-center content-center items-center gap-2 w-96">
-                    <p className="self-start">Rechercher une recette par titre</p>
+                    <p className={"self-start"}>Rechercher une recette par titre</p>
                     <input onChange={handleRecipeTitle} type="text" placeholder="Rechercher une recette..." className="border rounded border-gray-300 p-1 w-full"/>
                 </div>
             </div>
-            <h2 className="text-center text-3xl my-14">Résultats de Recherche</h2>
+            <h2 className={"text-center text-3xl my-14"}>Résultats de Recherche</h2>
             <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
             <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
                 <div className={"flex justify-center content-center gap-4"}>
@@ -113,37 +145,48 @@ function RecipeList() {
             </div>
                 {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {recipes.map(recipe => (
-                    <div className="bg-white rounded-lg shadow-lg p-6 relative" key={recipe.id}>
-                        <div className="relative">
-                            <img src={recipe.image_url} alt={recipe.title} className="w-64 h-auto object-cover rounded-lg mx-auto" />
-                            <span className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-lg text-2xl flex items-center justify-center" style={{ width: '36px', height: '36px' }}>
-                                {getCategoryEmoji(recipe.category)}
-                            </span>
+            {recipes.length > 0 ? (
+                <div className="flex flex-col gap-4 items-center">
+                    {recipes.map(recipe => (
+                        <div key={recipe.id}
+                             className="flex flex-col justify-center content-center gap-4 rounded-lg border p-4 w-[50%]">
+                            <div className="flex gap-4">
+                                <div>
+                                    <img className="rounded-lg w-48 min-w-48 object-cover"
+                                         src={recipe.image_url}
+                                         alt={recipe.title}/>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold">{recipe.title}</h3>
+                                    <p>{recipe.description}</p>
+                                    <p className={"mt-2"}> Recette: <a href={recipe.recipe_url} target="_blank"
+                                                    rel="noreferrer">{recipe.recipe_url}</a></p>
+                                    <p className={"mt-2"}>{recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)}</p>
+                                    <p className={"mt-2"}> ingrédients nécessaires:</p>
+                                    <div className={"flex flex-col justify-center content-center gap-2"}>
+                                        {recipe.ingredients.map((ingredient, index) => (
+                                            <span className={"whitespace-nowrap"} key={index}>{ingredient.quantity} {ingredient.name} </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <h2 className="text-3xl font-semibold text-center mb-4">{recipe.title}</h2>
-                        <div className="flex justify-center mt-4">
-                            <a href={recipe.recipe_url} className="text-blue-500 hover:text-blue-700">Liens vers la recette</a>
-                        </div>
-                        <h3 className="font-bold mt-4">Ingrédients:</h3>
-                        <ul>
-                            {recipe.ingredients.map(ingredient => (
-                                <li key={ingredient.name} className="text-sm list-none">{ingredient.quantity} {ingredient.name}</li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
+                    ))}
+                </div>
+            ) : (
+                loadingRecipies()
+            )}
+            <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
+                <div className={"flex justify-center content-center gap-4"}>
+                    {prevPage &&
+                        <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft}
+                                                                                        size={"3x"}/></button>}
+                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"}/></button>}
+                </div>
             </div>
-            <p className="text-sm text-gray-600 mt-6 mb-4">
-                Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
-            </p>
-           
-            {loading && loadingRecipies()}
+            {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
         </div>
     );
 }
 
-export default RecipeList;
-
-
+export default IngredientSelector;

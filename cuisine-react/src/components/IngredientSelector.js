@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import qs from 'qs';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faCircleArrowLeft, faCircleArrowRight} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleArrowLeft, faCircleArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const animatedComponents = makeAnimated();
 
@@ -18,107 +18,119 @@ function IngredientSelector() {
     const [nextPage, setNextPage] = useState(null);
     const [prevPage, setPrevPage] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
+    // Charger les ingrédients
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/ingredients/')
-            .then(response => {
-                setIngredients(response.data);
-                setLoading(false)
-            })
-            .catch(error => {
-                console.error('There was an error fetching the ingredients!', error);
-            });
-    }, [selectedIngredients]);
+        axios.get('http://127.0.0.1:8000/api/ingredients/', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+        .then(response => {
+            setIngredients(response.data);
+            setLoading(false);
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des ingrédients!', error);
+            setError('Échec de la récupération des ingrédients. Veuillez réessayer.');
+            setLoading(false);
+        });
+    }, []);
 
+    // Charger les recettes
     const fetchRecipes = useCallback((url) => {
-        setLoading(true)
+        setLoading(true);
         axios.get(url, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            },
             params: {
                 title: recipeTitle,
                 category: selectedCategory,
                 ingredients: selectedIngredients
             },
             paramsSerializer: params => {
-                return qs.stringify(params, { arrayFormat: "repeat" })
+                return qs.stringify(params, { arrayFormat: "repeat" });
             }
         })
         .then(response => {
             setRecipes(response.data.results);
             setNextPage(response.data.next);
             setPrevPage(response.data.previous);
-            setLoading(false)
+            setLoading(false);
         })
         .catch(error => {
-            console.error('There was an error fetching the recipes!', error);
+            console.error('Erreur lors de la récupération des recettes!', error);
+            setError('Échec de la récupération des recettes. Veuillez réessayer.');
+            setLoading(false);
         });
     }, [selectedIngredients, selectedCategory, recipeTitle]);
 
+    // Déclenche la recherche de recettes après chaque changement de paramètres
     useEffect(() => {
         const timeout = setTimeout(() => {
-                    fetchRecipes('http://127.0.0.1:8000/api/recipes/');
+            fetchRecipes('http://127.0.0.1:8000/api/recipes/');
         }, 500);
         return () => clearTimeout(timeout);
     }, [fetchRecipes]);
 
+    // Gérer les changements de sélection d'ingrédients
     const handleIngredientChange = (e) => {
         setSelectedIngredients(e.map(ingredient => ingredient.value));
     };
 
+    // Gérer les changements de catégorie
     const handleCategoryChange = (e) => {
         setSelectedCategory(e.value);
     };
 
+    // Gérer les changements de titre de recette
     const handleRecipeTitle = (e) => {
         setRecipeTitle(e.target.value);
-    }
+    };
 
-    const loadingRecipies = () => {
+    // Affichage du chargement
+    const loadingRecipes = () => {
         if (loading) {
             return (
-                <div
-                    className="mx-auto justify-center content-center flex h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]"
-                    role="status">
-                        <span
-                            className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-                        >
-                            Loading...
-                        </span>
+                <div className="mx-auto flex justify-center items-center h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent text-primary" role="status">
+                    <span className="sr-only">Chargement...</span>
                 </div>
-            )
+            );
         } else {
-            return <p className={'text-center'}>Aucune recette trouvée pour les ingrédients sélectionnés.</p>
+            return <p className={'text-center'}>Aucune recette trouvée pour les ingrédients sélectionnés.</p>;
         }
-    }
+    };
 
+    // Récupération du numéro de page
     function getPageNumber(url) {
         const urlParams = new URLSearchParams(new URL(url).search);
-        const page = parseInt(urlParams.get('page'));
-        return page;
+        return parseInt(urlParams.get('page'));
     }
 
     return (
         <div>
             <h1 className={'text-center text-6xl mt-14 mb-12'}>Sélectionnez vos Ingrédients</h1>
-            <h2 className={'text-black/40 text-center mb-14'}>Choisissez une catégorie et des ingrédients pour trouver
-                des recettes qui vous conviennent.</h2>
-            <div className="flex flex-col justify-center content-center items-center gap-4">
-                <div className={'flex justify-center content-center gap-8'}>
-                    <div className="flex flex-col w-80 justify-center content-center items-center gap-2">
+            <h2 className={'text-black/40 text-center mb-14'}>Choisissez une catégorie et des ingrédients pour trouver des recettes qui vous conviennent.</h2>
+            <div className="flex flex-col items-center gap-4">
+                <div className={'flex justify-center gap-8'}>
+                    <div className="flex flex-col w-80 items-center gap-2">
                         Catégories
                         <Select
                             className={'w-full'}
-                            options={categories.map(category => ({value: category, label: category}))}
+                            options={categories.map(category => ({ value: category, label: category }))}
                             onChange={handleCategoryChange}
-                            defaultValue={{value: 'plat', label: 'plat'}}
+                            defaultValue={{ value: 'plat', label: 'plat' }}
                             placeholder={'Sélectionnez une catégorie...'}
                         />
                     </div>
-                    <div className="flex flex-col w-80 justify-center content-center items-center gap-2">
+                    <div className="flex flex-col w-80 items-center gap-2">
                         Ingrédients
                         <Select
                             className={'w-full'}
                             components={animatedComponents}
-                            options={ingredients.map(ingredient => ({value: ingredient.name, label: ingredient.name}))}
+                            options={ingredients.map(ingredient => ({ value: ingredient.name, label: ingredient.name }))}
                             onChange={handleIngredientChange}
                             isMulti
                             noOptionsMessage={() => 'Aucun ingrédient trouvé.'}
@@ -128,44 +140,36 @@ function IngredientSelector() {
                     </div>
                 </div>
                 <p className={"text-5xl"}>Ou</p>
-                <div className="flex flex-col justify-center content-center items-center gap-2 w-96">
+                <div className="flex flex-col items-center gap-2 w-96">
                     <p className={"self-start"}>Rechercher une recette par titre</p>
-                    <input onChange={handleRecipeTitle} type="text" placeholder="Rechercher une recette..." className="border rounded border-gray-300 p-1 w-full"/>
+                    <input onChange={handleRecipeTitle} type="text" placeholder="Rechercher une recette..." className="border rounded border-gray-300 p-1 w-full" />
                 </div>
             </div>
             <h2 className={"text-center text-3xl my-14"}>Résultats de Recherche</h2>
-            <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
-            <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
-                <div className={"flex justify-center content-center gap-4"}>
-                    {prevPage &&
-                        <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft}
-                                                                                        size={"3x"}/></button>}
-                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"}/></button>}
+            <div className="pagination flex flex-col items-center gap-4 my-7">
+                <div className="flex justify-center gap-4">
+                    {prevPage && <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft} size={"3x"} /></button>}
+                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"} /></button>}
                 </div>
-            </div>
                 {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
             </div>
             {recipes.length > 0 ? (
                 <div className="flex flex-col gap-4 items-center">
                     {recipes.map(recipe => (
-                        <div key={recipe.id}
-                             className="flex flex-col justify-center content-center gap-4 rounded-lg border p-4 w-[50%]">
+                        <div key={recipe.id} className="flex flex-col gap-4 rounded-lg border p-4 w-[50%]">
                             <div className="flex gap-4">
                                 <div>
-                                    <img className="rounded-lg w-48 min-w-48 object-cover"
-                                         src={recipe.image_url}
-                                         alt={recipe.title}/>
+                                    <img className="rounded-lg w-48 min-w-48 object-cover" src={recipe.image_url} alt={recipe.title} />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold">{recipe.title}</h3>
                                     <p>{recipe.description}</p>
-                                    <p className={"mt-2"}> Recette: <a href={recipe.recipe_url} target="_blank"
-                                                    rel="noreferrer">{recipe.recipe_url}</a></p>
+                                    <p className={"mt-2"}> Recette: <a href={recipe.recipe_url} target="_blank" rel="noreferrer">{recipe.recipe_url}</a></p>
                                     <p className={"mt-2"}>{recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)}</p>
-                                    <p className={"mt-2"}> ingrédients nécessaires:</p>
-                                    <div className={"flex flex-col justify-center content-center gap-2"}>
+                                    <p className={"mt-2"}> Ingrédients nécessaires:</p>
+                                    <div className={"flex flex-col gap-2"}>
                                         {recipe.ingredients.map((ingredient, index) => (
-                                            <span className={"whitespace-nowrap"} key={index}>{ingredient.quantity} {ingredient.name} </span>
+                                            <span className={"whitespace-nowrap"} key={index}>{ingredient.quantity} {ingredient.name}</span>
                                         ))}
                                     </div>
                                 </div>
@@ -174,17 +178,15 @@ function IngredientSelector() {
                     ))}
                 </div>
             ) : (
-                loadingRecipies()
+                loadingRecipes()
             )}
-            <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
-                <div className={"flex justify-center content-center gap-4"}>
-                    {prevPage &&
-                        <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft}
-                                                                                        size={"3x"}/></button>}
-                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"}/></button>}
+            <div className="pagination flex flex-col items-center gap-4 my-7">
+                <div className="flex justify-center gap-4">
+                    {prevPage && <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft} size={"3x"} /></button>}
+                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"} /></button>}
                 </div>
+                {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
             </div>
-            {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
         </div>
     );
 }
