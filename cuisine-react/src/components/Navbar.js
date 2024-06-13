@@ -28,6 +28,11 @@ export default function Navbar() {
                         <Link to="/select-ingredients" className="text-white">Sélection d'ingrédients</Link>
                     </li>
                 )}
+                {userIsAuthenticated && (
+                    <li>
+                        <Link to="/dashboard" className="text-white">Dashboard</Link>
+                    </li>
+                )}
                 <li>
                     <Link to="/favorites" className="text-white">Favoris</Link>
                 </li>
