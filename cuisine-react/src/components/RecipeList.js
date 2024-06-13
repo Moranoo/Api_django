@@ -83,12 +83,6 @@ function RecipeList() {
         }
     };
 
-    function getPageNumber(url) {
-        const urlParams = new URLSearchParams(new URL(url).search);
-        const page = parseInt(urlParams.get('page'));
-        return page;
-    }
-
     return (
         <div className="flex flex-col items-center gap-4 px-4 md:px-8"> {/* Ajout de padding pour les écrans moyens et grands */}
             <h1 className="text-center text-6xl mt-14 mb-12">Liste des Recettes</h1>
@@ -118,11 +112,11 @@ function RecipeList() {
                 </div>
                 {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"> {/* Ajout de classes de grille avec padding */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {recipes.map(recipe => (
                     <div className="bg-white rounded-lg shadow-lg p-6 relative" key={recipe.id}>
                         <div className="relative">
-                            <img src={recipe.image_url} alt={recipe.title} className="w-64 h-auto object-cover rounded-lg mx-auto" />
+                            <img src={recipe.image_url} alt={recipe.title} className="w-full h-auto object-cover rounded-lg" />
                             <span className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-lg text-2xl flex items-center justify-center" style={{ width: '36px', height: '36px' }}>
                                 {getCategoryEmoji(recipe.category)}
                             </span>
