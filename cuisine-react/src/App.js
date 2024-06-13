@@ -7,6 +7,7 @@ import RegisterForm from './components/RegisterForm';
 import LoginForm from './components/LoginForm';
 import Home from './components/Home';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorPage from "./components/ErrorPage";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                     <Route path="/register" element={<RegisterForm />} />
                     <Route path="/recipes" element={<ProtectedRoute element={RecipeList} />} />
                     <Route path="/select-ingredients" element={<ProtectedRoute element={IngredientSelector} />} />
+                    <Route path="*" element={<ErrorPage />} />
                 </Routes>
             </div>
         </Router>
