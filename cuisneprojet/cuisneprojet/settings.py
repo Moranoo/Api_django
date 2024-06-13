@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'recettes',
     'rest_framework_simplejwt',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
