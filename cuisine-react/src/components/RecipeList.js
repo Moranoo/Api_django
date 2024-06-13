@@ -4,8 +4,6 @@ import qs from 'qs';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleArrowLeft, faCircleArrowRight } from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCircleArrowLeft, faCircleArrowRight} from "@fortawesome/free-solid-svg-icons";
 
 function RecipeList() {
     const [categories] = useState(['base', 'dessert', 'plat']);
@@ -84,12 +82,6 @@ function RecipeList() {
             return <p className={'text-center'}>Aucune recette trouvée pour les critères sélectionnés.</p>;
         }
     };
-
-    function getPageNumber(url) {
-        const urlParams = new URLSearchParams(new URL(url).search);
-        const page = parseInt(urlParams.get('page'));
-        return page;
-    }
 
     return (
         <div className="flex flex-col items-center gap-4 px-4 md:px-8"> {/* Ajout de padding pour les écrans moyens et grands */}
