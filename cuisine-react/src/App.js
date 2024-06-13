@@ -5,7 +5,6 @@ import IngredientSelector from './components/IngredientSelector';
 import Navbar from './components/Navbar';
 import RegisterForm from './components/RegisterForm';
 import LoginForm from './components/LoginForm';
-import Home from './components/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -15,7 +14,6 @@ function App() {
                 <Navbar />
                 <Routes>
                     <Route path="/" element={<Navigate to="/login" />} />
-                    <Route path="/home" element={<Home />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/register" element={<RegisterForm />} />
                     <Route path="/recipes" element={<ProtectedRoute element={RecipeList} />} />
