@@ -12,7 +12,7 @@ from .serializers import UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 class RecipePagination(PageNumberPagination):
-    page_size = 10
+    page_size = 12
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
