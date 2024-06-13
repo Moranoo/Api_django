@@ -72,6 +72,17 @@ function RecipeList() {
             })
     }
 
+    const removeFavorite = (recipeId) => {
+        axios.delete(`http://localhost:8000/api/favorites/${recipeId}/`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+            .then(() => {
+                fetchFavorites('http://localhost:8000/api/favorites/');
+            })
+    }
+
     const handleCategoryChange = (e) => {
         setSelectedCategory(e ? e.value : '');
     };
@@ -132,7 +143,7 @@ function RecipeList() {
                            getPageNumber={getPageNumber}/>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {recipes.map(recipe => (
-                    <RecipeCard key={recipe.id} recipe={recipe} favorite={!isFavorite(recipe)} addFavorite={() => addFavorite(recipe.id)}/>
+                    <RecipeCard key={recipe.id} recipe={recipe} favorite={!isFavorite(recipe)} deleteFavorite={() => removeFavorite(recipe.id)} addFavorite={() => addFavorite(recipe.id)}/>
                 ))}
             </div>
             {loading && loadingRecipes()}
