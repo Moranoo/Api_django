@@ -20,6 +20,16 @@ export default function Favorites() {
                 setPrevPage(response.data.previous);
             })
     }
+    const removeFavorite = (recipeId) => {
+        axios.delete(`http://localhost:8000/api/favorites/${recipeId}/`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+            .then(() => {
+                fetchFavorites('http://localhost:8000/api/favorites/');
+            })
+    }
 
     useEffect(() => {
         fetchFavorites('http://localhost:8000/api/favorites/');
@@ -35,7 +45,7 @@ export default function Favorites() {
             <h1 className="text-center text-6xl mt-14 mb-12">Page des favoris</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {favorites.map(favorite => (
-                    <RecipeCard key={favorite.id} recipe={favorite}/>
+                    <RecipeCard key={favorite.id} recipe={favorite} favorite={false} deleteFavorite={() => removeFavorite(favorite.id)} />
                 ))}
             </div>
             <p className="text-sm text-gray-600 mt-6 mb-4">
