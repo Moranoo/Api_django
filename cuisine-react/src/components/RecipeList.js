@@ -4,6 +4,7 @@ import qs from 'qs';
 import Select from 'react-select';
 import RecipeCard from "./RecipeCard";
 import PageIndicator from "./PageIndicator";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 
 function RecipeList() {
     const [categories] = useState(['base', 'dessert', 'plat']);
@@ -16,6 +17,7 @@ function RecipeList() {
     const [loading, setLoading] = useState(true);
 
     const fetchRecipes = useCallback((url) => {
+        setRecipes([]);
         setLoading(true);
         axios.get(url, {
             headers: {
@@ -36,7 +38,18 @@ function RecipeList() {
             setLoading(false);
         })
         .catch(error => {
-            console.error('There was an error fetching the recipes!', error);
+            toast.error(`Erreur lors de la récupération des recettes! Veuillez réessayer.${error}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                transition: Bounce,
+            });
+            setLoading(false);
         });
     }, [selectedCategory, recipeTitle]);
 
@@ -52,8 +65,6 @@ function RecipeList() {
         })
             .then(response => {
                 setFavorites(response.data.results);
-                setNextPage(response.data.next);
-                setPrevPage(response.data.previous);
             })
     }
 
@@ -69,6 +80,17 @@ function RecipeList() {
         })
             .then(() => {
                 fetchFavorites('http://localhost:8000/api/favorites/');
+                toast.success('Recette ajoutée aux favoris! 👍', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                })
             })
     }
 
@@ -80,6 +102,17 @@ function RecipeList() {
         })
             .then(() => {
                 fetchFavorites('http://localhost:8000/api/favorites/');
+                toast.success('Recette retirée des favoris! 👎', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                })
             })
     }
 
@@ -120,6 +153,7 @@ function RecipeList() {
 
     return (
         <div className="flex flex-col items-center gap-4 px-4 md:px-8"> {/* Ajout de padding pour les écrans moyens et grands */}
+        <ToastContainer />
             <h1 className="text-center text-6xl mt-14 mb-12">Liste des Recettes</h1>
             <div className="flex flex-row justify-center content-center items-center gap-8">
                 <div className="flex flex-col w-80 justify-center content-center items-center gap-2">
@@ -139,16 +173,14 @@ function RecipeList() {
                 </div>
             </div>
             <h2 className="text-center text-3xl my-14">Résultats de Recherche</h2>
-            <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes}
-                           getPageNumber={getPageNumber}/>
+            {loading && loadingRecipes()}
+            {recipes.length !== 0 && <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber}/>}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {recipes.map(recipe => (
                     <RecipeCard key={recipe.id} recipe={recipe} favorite={!isFavorite(recipe)} deleteFavorite={() => removeFavorite(recipe.id)} addFavorite={() => addFavorite(recipe.id)}/>
                 ))}
             </div>
-            {loading && loadingRecipes()}
-            <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes}
-                           getPageNumber={getPageNumber}/>
+            {recipes.length !== 0 && <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber}/>}
             <p className="text-sm text-gray-600 mt-6 mb-4">
                 Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
             </p>

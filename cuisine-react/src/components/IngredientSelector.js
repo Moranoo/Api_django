@@ -4,6 +4,7 @@ import qs from 'qs';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import PageIndicator from "./PageIndicator";
+import {toast, ToastContainer} from "react-toastify";
 
 const animatedComponents = makeAnimated();
 
@@ -31,8 +32,17 @@ function IngredientSelector() {
             setLoading(false);
         })
         .catch(error => {
-            console.error('Erreur lors de la récupération des ingrédients!', error);
             setError('Échec de la récupération des ingrédients. Veuillez réessayer.');
+            toast.error(`Erreur lors de la récupération des ingrédients! Veuillez réessayer.${error}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
             setLoading(false);
         });
     }, []);
@@ -60,8 +70,17 @@ function IngredientSelector() {
             setLoading(false);
         })
         .catch(error => {
-            console.error('Erreur lors de la récupération des recettes!', error);
             setError('Échec de la récupération des recettes. Veuillez réessayer.');
+            toast.error(`Erreur lors de la récupération des recettes! Veuillez réessayer.${error}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
             setLoading(false);
         });
     }, [selectedIngredients, selectedCategory, recipeTitle]);
@@ -110,6 +129,7 @@ function IngredientSelector() {
 
     return (
         <div>
+            <ToastContainer />
             <h1 className={'text-center text-6xl mt-14 mb-12'}>Sélectionnez vos Ingrédients</h1>
             <h2 className={'text-black/40 text-center mb-14'}>Choisissez une catégorie et des ingrédients pour trouver des recettes qui vous conviennent.</h2>
             <div className="flex flex-col items-center gap-4">
@@ -145,7 +165,7 @@ function IngredientSelector() {
                 </div>
             </div>
             <h2 className={"text-center text-3xl my-14"}>Résultats de Recherche</h2>
-            <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber} />
+            {recipes.length !== 0 && <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber} />}
             {recipes.length > 0 ? (
                 <div className="flex flex-col gap-4 items-center">
                     {recipes.map(recipe => (
@@ -173,7 +193,7 @@ function IngredientSelector() {
             ) : (
                 loadingRecipes()
             )}
-            <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber} />
+            {recipes.length !== 0 && <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber} />}
         </div>
     );
 }

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import RecipeCard from "./RecipeCard";
 import PageIndicator from "./PageIndicator";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function Favorites() {
     const [favorites, setFavorites] = useState([]);
@@ -28,7 +29,18 @@ export default function Favorites() {
         })
             .then(() => {
                 fetchFavorites('http://localhost:8000/api/favorites/');
+                toast.success('Recette retirée des favoris! 👎', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
             })
+        })
     }
 
     useEffect(() => {
@@ -42,6 +54,7 @@ export default function Favorites() {
 
     return (
         <div className="flex flex-col items-center gap-4 px-4 md:px-8">
+            <ToastContainer />
             <h1 className="text-center text-6xl mt-14 mb-12">Page des favoris</h1>
             {favorites.length === 0 ? <p className="text-center text-xl">Vous n'avez pas encore de recettes en favoris.</p>
                 :
