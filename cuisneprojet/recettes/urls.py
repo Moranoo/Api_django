@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import get_recipes, get_ingredients, CreateUserView, CustomTokenObtainPairView, get_favorites
+from .views import get_recipes, get_ingredients, CreateUserView, CustomTokenObtainPairView, delete_favorite, add_favorite, get_favorites
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -10,4 +10,6 @@ urlpatterns = [
     path('login/', CustomTokenObtainPairView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('favorites/', get_favorites, name='get_favorites'),
+    path('favorites/<int:recipe_id>/', delete_favorite, name='delete_favorite'),
+    path('favorites/add/', add_favorite, name='delete_favorite'),
 ]

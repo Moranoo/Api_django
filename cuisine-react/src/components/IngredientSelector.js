@@ -3,8 +3,7 @@ import axios from 'axios';
 import qs from 'qs';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleArrowLeft, faCircleArrowRight } from '@fortawesome/free-solid-svg-icons';
+import PageIndicator from "./PageIndicator";
 
 const animatedComponents = makeAnimated();
 
@@ -146,13 +145,7 @@ function IngredientSelector() {
                 </div>
             </div>
             <h2 className={"text-center text-3xl my-14"}>Résultats de Recherche</h2>
-            <div className="pagination flex flex-col items-center gap-4 my-7">
-                <div className="flex justify-center gap-4">
-                    {prevPage && <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft} size={"3x"} /></button>}
-                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"} /></button>}
-                </div>
-                {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
-            </div>
+            <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber} />
             {recipes.length > 0 ? (
                 <div className="flex flex-col gap-4 items-center">
                     {recipes.map(recipe => (
@@ -180,13 +173,7 @@ function IngredientSelector() {
             ) : (
                 loadingRecipes()
             )}
-            <div className="pagination flex flex-col items-center gap-4 my-7">
-                <div className="flex justify-center gap-4">
-                    {prevPage && <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft} size={"3x"} /></button>}
-                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"} /></button>}
-                </div>
-                {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
-            </div>
+            <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchRecipes} getPageNumber={getPageNumber} />
         </div>
     );
 }

@@ -9,6 +9,7 @@ function RecipeList() {
     const [categories] = useState(['base', 'dessert', 'plat']);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [recipes, setRecipes] = useState([]);
+    const [favorites, setFavorites] = useState([]);
     const [recipeTitle, setRecipeTitle] = useState('');
     const [nextPage, setNextPage] = useState(null);
     const [prevPage, setPrevPage] = useState(null);
@@ -43,6 +44,45 @@ function RecipeList() {
         fetchRecipes('http://127.0.0.1:8000/api/recipes/');
     }, [fetchRecipes]);
 
+    const fetchFavorites = (url) => {
+        axios.get(url, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+            .then(response => {
+                setFavorites(response.data.results);
+                setNextPage(response.data.next);
+                setPrevPage(response.data.previous);
+            })
+    }
+
+    useEffect(() => {
+        fetchFavorites('http://localhost:8000/api/favorites/');
+    }, []);
+
+    const addFavorite = (recipeId) => {
+        axios.post(`http://localhost:8000/api/favorites/add/`, {recipe: recipeId}, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+            .then(() => {
+                fetchFavorites('http://localhost:8000/api/favorites/');
+            })
+    }
+
+    const removeFavorite = (recipeId) => {
+        axios.delete(`http://localhost:8000/api/favorites/${recipeId}/`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+            .then(() => {
+                fetchFavorites('http://localhost:8000/api/favorites/');
+            })
+    }
+
     const handleCategoryChange = (e) => {
         setSelectedCategory(e ? e.value : '');
     };
@@ -54,6 +94,10 @@ function RecipeList() {
     function getPageNumber(url) {
         const urlParams = new URLSearchParams(new URL(url).search);
         return parseInt(urlParams.get('page'));
+    }
+
+    const isFavorite = (recipe) => {
+        return favorites.some(favorite => favorite.id === recipe.id);
     }
 
     const loadingRecipes = () => {
@@ -99,7 +143,7 @@ function RecipeList() {
                            getPageNumber={getPageNumber}/>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {recipes.map(recipe => (
-                    <RecipeCard key={recipe.id} recipe={recipe}/>
+                    <RecipeCard key={recipe.id} recipe={recipe} favorite={!isFavorite(recipe)} deleteFavorite={() => removeFavorite(recipe.id)} addFavorite={() => addFavorite(recipe.id)}/>
                 ))}
             </div>
             {loading && loadingRecipes()}

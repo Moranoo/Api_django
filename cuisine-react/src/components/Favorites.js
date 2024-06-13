@@ -20,6 +20,16 @@ export default function Favorites() {
                 setPrevPage(response.data.previous);
             })
     }
+    const removeFavorite = (recipeId) => {
+        axios.delete(`http://localhost:8000/api/favorites/${recipeId}/`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+            .then(() => {
+                fetchFavorites('http://localhost:8000/api/favorites/');
+            })
+    }
 
     useEffect(() => {
         fetchFavorites('http://localhost:8000/api/favorites/');
@@ -33,16 +43,22 @@ export default function Favorites() {
     return (
         <div className="flex flex-col items-center gap-4 px-4 md:px-8">
             <h1 className="text-center text-6xl mt-14 mb-12">Page des favoris</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {favorites.map(favorite => (
-                    <RecipeCard key={favorite.id} recipe={favorite}/>
-                ))}
-            </div>
-            <p className="text-sm text-gray-600 mt-6 mb-4">
-                Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
-            </p>
-            <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchFavorites}
-                           getPageNumber={getPageNumber}/>
+            {favorites.length === 0 ? <p className="text-center text-xl">Vous n'avez pas encore de recettes en favoris.</p>
+                :
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        {favorites.map(favorite => (
+                            <RecipeCard key={favorite.id} recipe={favorite} favorite={false}
+                                        deleteFavorite={() => removeFavorite(favorite.id)}/>
+                        ))}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-6 mb-4">
+                        Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
+                    </p>
+                    <PageIndicator prevPage={prevPage} nextPage={nextPage} fetchPage={fetchFavorites}
+                                   getPageNumber={getPageNumber}/>
+                </>
+            }
         </div>
     );
 }

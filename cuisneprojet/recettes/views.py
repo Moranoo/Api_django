@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.authtoken.models import Token
 
-from .models import Recipe, Ingredient
+from .models import Recipe, Ingredient, FavoriteRecipes
 from .serializers import RecipeSerializer, IngredientSerializer
 from .serializers import UserSerializer
 
@@ -57,6 +57,25 @@ def get_favorites(request):
     result_page = paginator.paginate_queryset(favorites, request)
     serializer = RecipeSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
+
+@api_view(['POST'])
+def add_favorite(request):
+    serializer = UserSerializer(request.user)
+    user_id = serializer.data['id']
+    recipe_id = request.data['recipe']
+    recipe = Recipe.objects.get(id=recipe_id)
+    favorite = FavoriteRecipes(user_id=user_id, recipe=recipe)
+    favorite.save()
+    return Response(status=status.HTTP_201_CREATED)
+
+@api_view(['DELETE'])
+def delete_favorite(request, recipe_id):
+    serializer = UserSerializer(request.user)
+    user_id = serializer.data['id']
+    recipe = Recipe.objects.get(id=recipe_id)
+    favorite = FavoriteRecipes.objects.get(user=user_id, recipe=recipe)
+    favorite.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CreateUserView(views.APIView):
     permission_classes = (permissions.AllowAny,)
