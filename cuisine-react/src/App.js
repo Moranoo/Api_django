@@ -16,8 +16,8 @@ function App() {
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/register" element={<RegisterForm />} />
-                    <Route path="/recipes" element={<ProtectedRoute element={RecipeList} />} />
-                    <Route path="/select-ingredients" element={<ProtectedRoute element={IngredientSelector} />} />
+                    <Route path="/recipes" element={<ProtectedRoute element={<RecipeList />} />} />
+                    <Route path="/select-ingredients" element={<ProtectedRoute element={<IngredientSelector />} />} />
                 </Routes>
             </div>
         </Router>

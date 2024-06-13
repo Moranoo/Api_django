@@ -21,7 +21,7 @@ function RegisterForm() {
             setMessage('Utilisateur enregistré avec succès! Vous serez redirigé vers la page de connexion.');
             setIsRegistered(true);
             setTimeout(() => {
-                navigate('/login');  // Rediriger vers la page de connexion après un délai de 3 secondes
+                navigate('/login');
             }, 3000);
         })
         .catch(error => {

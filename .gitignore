@@ -2,4 +2,6 @@
 monenv
 migrations/__pycache__
 cuisneprojet/cuisneprojet/__pycache__
+cuisneprojet/recettes/__pycache__
+cuisneprojet/recettes/migrations/__pycache__
 tutorial-env
