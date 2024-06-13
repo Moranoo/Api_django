@@ -1,17 +1,20 @@
 import React from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faHeart, faHeartCrack} from "@fortawesome/free-solid-svg-icons";
+import QRCode from 'qrcode.react';
 
 export default function RecipeCard({ recipe, favorite, deleteFavorite, addFavorite }) {
-
+  
     const getCategoryEmoji = (category) => {
-    const categoryEmojiMap = {
-        'plat': '🫕',   // Pot of food
-        'base': '🥘',  // Paella (commonly used to represent a base dish)
-        'dessert': '🍰' // Cake
+        const categoryEmojiMap = {
+            'plat': '🫕',
+            'base': '🥘',
+            'dessert': '🍰'
+        };
+        return categoryEmojiMap[category.toLowerCase()] || '🍽';
     };
-    return categoryEmojiMap[category.toLowerCase()] || '🍽'; // Default plate with fork and knife
-    };
+
+    const qrSize = 100; // Taille uniforme pour tous les QR codes
 
     return (
         <div className="bg-white rounded-lg shadow-lg p-6 relative">
@@ -28,8 +31,11 @@ export default function RecipeCard({ recipe, favorite, deleteFavorite, addFavori
                 </button>
             </div>
             <h2 className="text-3xl font-semibold text-center mt-4">{recipe.title}</h2>
+            {/* Envelopper le QR Code dans un lien */}
             <div className="flex justify-center mt-4">
-                <a href={recipe.recipe_url} className="text-blue-500 hover:text-blue-700">Liens vers la recette</a>
+                <a href={recipe.recipe_url} target="_blank" rel="noopener noreferrer">
+                    <QRCode value={recipe.recipe_url} size={qrSize} level="H" />
+                </a>
             </div>
             <h3 className="font-bold mt-4">Ingrédients:</h3>
             <ul>
