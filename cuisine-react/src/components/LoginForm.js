@@ -19,6 +19,7 @@ function LoginForm() {
             const { access, refresh } = response.data;
             localStorage.setItem('access_token', access);
             localStorage.setItem('refresh_token', refresh);
+            localStorage.setItem('username', username);
             navigate('/recipes');
         })
         .catch(error => {
