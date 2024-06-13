@@ -12,7 +12,7 @@ from .serializers import UserSerializer
 
 
 class RecipePagination(PageNumberPagination):
-    page_size = 10
+    page_size = 12
 
 @api_view(['GET'])
 def get_recipes(request):
