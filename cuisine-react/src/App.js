@@ -8,7 +8,7 @@ import LoginForm from './components/LoginForm';
 import ProtectedRoute from './components/ProtectedRoute';
 import Favorites from "./components/Favorites";
 import ErrorPage from "./components/ErrorPage";
-
+import Dashboard from './components/dashboard';
 function App() {
     return (
         <Router>
@@ -21,6 +21,7 @@ function App() {
                     <Route path="/recipes" element={<ProtectedRoute element={<RecipeList />} />} />
                     <Route path="/select-ingredients" element={<ProtectedRoute element={<IngredientSelector />} />} />
                     <Route path="/favorites" element={<ProtectedRoute element={<Favorites />} />} />
+                    <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
                     <Route path="*" element={<ErrorPage />} />
                 </Routes>
             </div>
