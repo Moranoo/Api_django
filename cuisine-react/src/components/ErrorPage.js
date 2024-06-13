@@ -2,15 +2,13 @@ import React, {useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 
 export default function ErrorPage() {
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const navigate = useNavigate(); 
 
-  // Redirect user after a set time (e.g., 5000 milliseconds = 5 seconds)
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/'); // Assuming '/' is the path to your list page
-    }, 5000); // Adjust the time as needed
+      navigate('/recipes'); 
+    }, 5000); 
 
-    // Cleanup function to clear the timer if the component unmounts before the timer fires
     return () => clearTimeout(timer);
   }, [navigate]);
 
