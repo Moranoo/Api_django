@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthenticated, logout } from '../utils/auth';
+import useravatar from "../image/avataruser.jpg";
 
 export default function Navbar() {
     const location = useLocation();
@@ -18,8 +19,8 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="bg-gray-800 p-4">
-            <ul className="flex gap-6 items-center">
+        <nav className="bg-gray-800 px-3 py-1">
+            <ul className="flex gap-6 items-center justify-center content-center">
                 <li>
                     <Link to="/recipes" className="text-white">Recettes</Link>
                 </li>
@@ -28,15 +29,21 @@ export default function Navbar() {
                         <Link to="/select-ingredients" className="text-white">Sélection d'ingrédients</Link>
                     </li>
                 )}
-                {userIsAuthenticated && (
-                    <li>
-                        <Link to="/dashboard" className="text-white">Dashboard</Link>
-                    </li>
-                )}
                 <li>
                     <Link to="/favorites" className="text-white">Favoris</Link>
                 </li>
-                <div className="ml-auto flex gap-6">
+                <div className="ml-auto flex gap-6 justify-center items-center content-center">
+                                    {userIsAuthenticated && (
+                    <li>
+                        <Link to="/dashboard" className="text-white flex flex-col justify-center items-center content-center"><img
+                            src={useravatar}
+                            alt="Profile"
+                            className="w-10 h-10 rounded-full"
+                        />
+                            {localStorage.getItem('username')}
+                        </Link>
+                    </li>
+                                    )}
                     {userIsAuthenticated ? (
                         <li>
                             <button onClick={handleLogout} className="text-white">Déconnexion</button>

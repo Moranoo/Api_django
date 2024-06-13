@@ -39,8 +39,8 @@ export default function RecipeCard({ recipe, favorite, deleteFavorite, addFavori
             </div>
             <h3 className="font-bold mt-4">Ingrédients:</h3>
             <ul>
-                {recipe.ingredients.map(ingredient => (
-                    <li key={ingredient.id} className="text-sm list-none">{ingredient.quantity} {ingredient.name}</li>
+                {recipe.ingredients.map((ingredient, index) => (
+                    <li key={index} className="text-sm list-none">{ingredient.quantity} {ingredient.name}</li>
                 ))}
             </ul>
         </div>

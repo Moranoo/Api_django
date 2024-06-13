@@ -8,7 +8,7 @@ import LoginForm from './components/LoginForm';
 import ProtectedRoute from './components/ProtectedRoute';
 import Favorites from "./components/Favorites";
 import ErrorPage from "./components/ErrorPage";
-import Dashboard from './components/dashboard';
+import Dashboard from './components/Dashboard';
 function App() {
     return (
         <Router>
