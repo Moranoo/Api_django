@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import qs from 'qs';
 import Select from 'react-select';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {faCircleArrowLeft, faCircleArrowRight} from '@fortawesome/free-solid-svg-icons'
+
 
 function RecipeList() {
     const [categories] = useState(['base', 'dessert', 'plat']);
@@ -99,6 +102,17 @@ function RecipeList() {
                 </div>
             </div>
             <h2 className="text-center text-3xl my-14">Résultats de Recherche</h2>
+            <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
+            <div className="pagination flex flex-col justify-center content-center items-center gap-4 my-7">
+                <div className={"flex justify-center content-center gap-4"}>
+                    {prevPage &&
+                        <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft}
+                                                                                        size={"3x"}/></button>}
+                    {nextPage && <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight} size={"3x"}/></button>}
+                </div>
+            </div>
+                {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> : <p className={"text-center"}>Vous êtes sur la dernière page</p>}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {recipes.map(recipe => (
                     <div className="bg-white rounded-lg shadow-lg p-6 relative" key={recipe.id}>
@@ -124,10 +138,7 @@ function RecipeList() {
             <p className="text-sm text-gray-600 mt-6 mb-4">
                 Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
             </p>
-            <div className="flex justify-between w-full px-6 my-4">
-                {prevPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(prevPage)}>Précédente</button>}
-                {nextPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(nextPage)}>Suivante</button>}
-            </div>
+           
             {loading && loadingRecipies()}
         </div>
     );
