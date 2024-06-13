@@ -21,7 +21,7 @@ export default function RecipeCard({ recipe, favorite, deleteFavorite, addFavori
             <div className="relative">
                 <img src={recipe.image_url} alt={recipe.title} className="w-full h-auto object-cover rounded-lg"/>
                 <span
-                    className="animate-spin absolute top-2 right-12 bg-white rounded-full p-2 shadow-lg text-2xl flex items-center justify-center"
+                    className="animate-spin categoryEmoji absolute top-2 right-12 bg-white rounded-full p-2 shadow-lg text-2xl flex items-center justify-center"
                     style={{width: '36px', height: '36px'}}> {getCategoryEmoji(recipe.category)}
                 </span>
                 <button
@@ -40,7 +40,7 @@ export default function RecipeCard({ recipe, favorite, deleteFavorite, addFavori
             <h3 className="font-bold mt-4">Ingrédients:</h3>
             <ul>
                 {recipe.ingredients.map(ingredient => (
-                    <li key={ingredient.name} className="text-sm list-none">{ingredient.quantity} {ingredient.name}</li>
+                    <li key={ingredient.id} className="text-sm list-none">{ingredient.quantity} {ingredient.name}</li>
                 ))}
             </ul>
         </div>
