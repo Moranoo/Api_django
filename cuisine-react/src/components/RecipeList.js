@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAuthHeader } from '../utils/auth';
 
 function RecipeList() {
     const [recipes, setRecipes] = useState([]);
     const [nextPage, setNextPage] = useState(null);
     const [prevPage, setPrevPage] = useState(null);
+    const [searchTitle, setSearchTitle] = useState('');
 
-    const fetchRecipes = (url) => {
-        axios.get(url)
+    const fetchRecipes = (url, params = {}) => {
+        axios.get(url, { headers: getAuthHeader(), params })
             .then(response => {
                 setRecipes(response.data.results);
                 setNextPage(response.data.next);
@@ -22,6 +24,10 @@ function RecipeList() {
         fetchRecipes('http://127.0.0.1:8000/api/recipes/');
     }, []);
 
+    const handleSearch = () => {
+        fetchRecipes('http://127.0.0.1:8000/api/recipes/', { title: searchTitle });
+    };
+
     const getCategoryEmoji = (category) => {
         const categoryEmojiMap = {
             'plat': '🫕',   // Pot of food
@@ -34,6 +40,18 @@ function RecipeList() {
     return (
         <div className="flex flex-col items-center gap-4">
             <h1 className="text-center text-6xl mt-14 mb-12">Liste des Recettes</h1>
+            <div className="mb-6">
+                <input
+                    type="text"
+                    value={searchTitle}
+                    onChange={(e) => setSearchTitle(e.target.value)}
+                    placeholder="Rechercher une recette"
+                    className="px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+                />
+                <button onClick={handleSearch} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                    Rechercher
+                </button>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {recipes.map(recipe => (
                     <div className="bg-white rounded-lg shadow-lg p-6 relative" key={recipe.id}>

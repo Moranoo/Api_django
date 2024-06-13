@@ -19,7 +19,7 @@ function LoginForm() {
             const { access, refresh } = response.data;
             localStorage.setItem('access_token', access);
             localStorage.setItem('refresh_token', refresh);
-            navigate('/recipes');  // Rediriger vers la page des recettes après la connexion
+            navigate('/recipes');
         })
         .catch(error => {
             setMessage('Login failed. Please try again.');
