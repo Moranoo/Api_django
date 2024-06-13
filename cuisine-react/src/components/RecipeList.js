@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getAuthHeader } from '../utils/auth';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCircleArrowLeft, faCircleArrowRight} from "@fortawesome/free-solid-svg-icons";
 
 function RecipeList() {
     const [recipes, setRecipes] = useState([]);
@@ -27,6 +29,11 @@ function RecipeList() {
     const handleSearch = () => {
         fetchRecipes('http://127.0.0.1:8000/api/recipes/', { title: searchTitle });
     };
+
+    function getPageNumber(url) {
+        const urlParams = new URLSearchParams(new URL(url).search);
+        return parseInt(urlParams.get('page'));
+    }
 
     const getCategoryEmoji = (category) => {
         const categoryEmojiMap = {
@@ -77,9 +84,17 @@ function RecipeList() {
             <p className="text-sm text-gray-600 mt-6 mb-4">
                 Légende des catégories: 🫕 Plat | 🥘 Base | 🍰 Dessert
             </p>
-            <div className="flex justify-between w-full px-6 my-4">
-                {prevPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(prevPage)}>Précédente</button>}
-                {nextPage && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => fetchRecipes(nextPage)}>Suivante</button>}
+            <div className="pagination flex flex-col items-center gap-4 my-7">
+                <div className="flex justify-center gap-4">
+                    {prevPage &&
+                        <button onClick={() => fetchRecipes(prevPage)}><FontAwesomeIcon icon={faCircleArrowLeft}
+                                                                                        size={"3x"}/></button>}
+                    {nextPage &&
+                        <button onClick={() => fetchRecipes(nextPage)}><FontAwesomeIcon icon={faCircleArrowRight}
+                                                                                        size={"3x"}/></button>}
+                </div>
+                {nextPage ? <p className={"text-center"}>Vous êtes sur la page {getPageNumber(nextPage) - 1}</p> :
+                    <p className={"text-center"}>Vous êtes sur la dernière page</p>}
             </div>
         </div>
     );

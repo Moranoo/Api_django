@@ -36,3 +36,11 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
+
+class FavoriteRecipes(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.recipe.title}'

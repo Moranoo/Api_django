@@ -28,6 +28,9 @@ export default function Navbar() {
                         <Link to="/select-ingredients" className="text-white">Sélection d'ingrédients</Link>
                     </li>
                 )}
+                <li>
+                    <Link to="/favorites" className="text-white">Favoris</Link>
+                </li>
                 <div className="ml-auto flex gap-6">
                     {userIsAuthenticated ? (
                         <li>

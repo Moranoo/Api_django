@@ -1,15 +1,16 @@
+from django.db.models import Count
+from rest_framework import permissions, status, views
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Count
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.authtoken.models import Token
+
 from .models import Recipe, Ingredient
 from .serializers import RecipeSerializer, IngredientSerializer
-from rest_framework import permissions, status, views
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
 from .serializers import UserSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 class RecipePagination(PageNumberPagination):
     page_size = 12
@@ -45,6 +46,17 @@ def get_ingredients(request):
     ingredients = Ingredient.objects.all()
     serializer = IngredientSerializer(ingredients, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def get_favorites(request):
+    serializer = UserSerializer(request.user)
+    user_id = serializer.data['id']
+    favorites = Recipe.objects.filter(favoriterecipes__user=user_id)
+
+    paginator = RecipePagination()
+    result_page = paginator.paginate_queryset(favorites, request)
+    serializer = RecipeSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 class CreateUserView(views.APIView):
     permission_classes = (permissions.AllowAny,)
