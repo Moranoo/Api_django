@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import useravatar from "./../image/avataruser.jpg";
+import useravatar from "../image/avataruser.jpg";
+import {toast, ToastContainer} from "react-toastify";
 
 const API_BASE_URL = 'http://localhost:8000';
-
-
 
 export default function Dashboard() {
     const [userData, setUserData] = useState({
@@ -38,12 +37,21 @@ export default function Dashboard() {
     const handleUpdateUsername = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`${API_BASE_URL}/api/update-profile/`, { username: newUsername }, {
+            await axios.put(`${API_BASE_URL}/api/update-profile/`, { username: newUsername }, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('access_token')}`
                 }
             });
-            alert('Nom d\'utilisateur mis à jour avec succès !');
+            toast.success('Nom d\'utilisateur mis à jour avec succès! 👍', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
             setUserData({ ...userData, username: newUsername });
             setNewUsername('');
         } catch (error) {
@@ -55,21 +63,41 @@ export default function Dashboard() {
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`${API_BASE_URL}/api/update-profile/`, { password: newPassword }, {
+            await axios.put(`${API_BASE_URL}/api/update-profile/`, { password: newPassword }, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('access_token')}`
                 }
             });
-            alert('Mot de passe mis à jour avec succès !');
+            toast.success('Mot de passe mis à jour avec succès! 👍', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
             setNewPassword('');
         } catch (error) {
             setError('Erreur lors de la mise à jour du mot de passe.');
+            toast.error(`Erreur lors de la mise à jour du mot de passe! Veuillez réessayer.${error}`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+            }
             console.error('Error updating password:', error);
         }
-    };
 
     return (
         <div className="flex flex-col items-center gap-8">
+            <ToastContainer />
             <h1 className="text-center text-4xl font-bold mt-14 mb-8">Dashboard</h1>
             <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
                 <h2 className="text-2xl font-semibold text-center mb-6">Détails de l'utilisateur</h2>
