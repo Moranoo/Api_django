@@ -1,22 +1,31 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.db.models import Count
+from rest_framework import permissions, status, views
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Count, Q
-from .models import Recipe, Ingredient
-from .serializers import RecipeSerializer
-from .serializers import IngredientSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.authtoken.models import Token
+
+from .models import Recipe, Ingredient, FavoriteRecipes
+from .serializers import RecipeSerializer, IngredientSerializer
+from .serializers import UserSerializer
+
 
 class RecipePagination(PageNumberPagination):
-    page_size = 10
+    page_size = 12
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_recipes(request):
     category = request.query_params.get('category')
     ingredients = request.query_params.getlist('ingredients')
-    print('Category:', category)  # Pour déboguer
-    print('Ingredients:', ingredients)  # Pour déboguer
+    title = request.query_params.get('title')
 
     recipes = Recipe.objects.all()
+
+    if title:
+        recipes = recipes.filter(title__icontains=title)
 
     if category:
         recipes = recipes.filter(category=category)
@@ -32,7 +41,68 @@ def get_recipes(request):
     return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_ingredients(request):
     ingredients = Ingredient.objects.all()
     serializer = IngredientSerializer(ingredients, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_favorites(request):
+    serializer = UserSerializer(request.user)
+    user_id = serializer.data['id']
+    favorites = Recipe.objects.filter(favoriterecipes__user=user_id)
+
+    paginator = RecipePagination()
+    result_page = paginator.paginate_queryset(favorites, request)
+    serializer = RecipeSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@api_view(['POST'])
+def add_favorite(request):
+    serializer = UserSerializer(request.user)
+    user_id = serializer.data['id']
+    recipe_id = request.data['recipe']
+    recipe = Recipe.objects.get(id=recipe_id)
+    favorite = FavoriteRecipes(user_id=user_id, recipe=recipe)
+    favorite.save()
+    return Response(status=status.HTTP_201_CREATED)
+
+@api_view(['DELETE'])
+def delete_favorite(request, recipe_id):
+    serializer = UserSerializer(request.user)
+    user_id = serializer.data['id']
+    recipe = Recipe.objects.get(id=recipe_id)
+    favorite = FavoriteRecipes.objects.get(user=user_id, recipe=recipe)
+    favorite.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CreateUserView(views.APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = (permissions.AllowAny,)
+
+@api_view(['PUT'])
+def update_user_profile(request):
+    user = request.user  # Récupère l'utilisateur actuellement authentifié
+
+    serializer = UserSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_profile(request):
+    user = request.user
+    serializer = UserSerializer(user)
     return Response(serializer.data)
